@@ -2,14 +2,39 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
-			local lspconfig = require('lspconfig')
+			local lspconfig = require("lspconfig")
 			lspconfig.lua_ls.setup({
-				settings = { Lua = { diagnostics = { globals = { 'vim', 'require' } } } }
+				settings = { Lua = { diagnostics = { globals = { "vim", "require" } } } },
 			})
 			lspconfig.bashls.setup({})
-			lspconfig.ruff.setup({})
+			lspconfig.pyright.setup({
+				settings = {
+					pyright = {
+						-- Using Ruff's import organizer
+						disableOrganizeImports = true,
+					},
+					python = {
+						analysis = {
+							-- Ignore all files for analysis to exclusively use Ruff for linting
+							ignore = { "*" },
+						},
+					},
+				},
+			})
 			lspconfig.gopls.setup({})
-			lspconfig.jdtls.setup({})
+			lspconfig.jdtls.setup({
+				cmd = {
+					vim.fn.stdpath("data") .. "/mason/packages/jdtls/bin/jdtls", -- Путь к серверу
+				},
+				root_dir = function(fname)
+					return require("lspconfig.util").root_pattern("pom.xml", ".git")(fname)
+				end,
+				settings = {
+					java = {
+						home = "/usr/lib/jvm/java-17-openjdk", -- Укажите путь к вашей Java
+					},
+				},
+			})
 			lspconfig.html.setup({})
 			lspconfig.cssls.setup({})
 			lspconfig.jsonls.setup({})
@@ -19,7 +44,7 @@ return {
 					vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
 					local opts = { buffer = ev.buf }
-					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)                   -- ctrl+o - вернуться назад vim.keymap.set("n", "K", vim.lsp.buf.hover, opts) -- смотрим сигнатуру vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts) -- ctrl+o - вернуться назад vim.keymap.set("n", "K", vim.lsp.buf.hover, opts) -- смотрим сигнатуру vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
 					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 					vim.keymap.set("n", "<Leader>D", vim.lsp.buf.type_definition, opts)
 					vim.keymap.set("n", "<Leader>lr", vim.lsp.buf.rename, { buffer = ev.buf, desc = "Rename Symbol" })
@@ -29,6 +54,6 @@ return {
 					end, opts)
 				end,
 			})
-		end
-	}
+		end,
+	},
 }
