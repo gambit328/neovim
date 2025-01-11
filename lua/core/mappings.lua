@@ -27,4 +27,5 @@ vim.keymap.set("n", "<leader>x", ":BufferLinePickClose<CR>")
 vim.keymap.set("n", "<c-x>", ":BufferLineCloseOthers<CR>")
 
 -- Other
-vim.keymap.set("n", "<leader>/", ":CommentToggle<CR>")
+-- vim.keymap.set("n", "<leader>/", ":CommentToggle<CR>")
+vim.keymap.set("n", "<leader>h", ":nohlsearch<CR>")
